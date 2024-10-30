@@ -1,0 +1,51 @@
+name: Build, Push to NCR, and Deploy to NCP
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 푸시 시 자동 배포
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Naver Container Registry (NCR)
+      env:
+        NCR_USERNAME: ${{ secrets.NCR_USERNAME }}
+        NCR_PASSWORD: ${{ secrets.NCR_PASSWORD }}
+      run: |
+        echo $NCR_PASSWORD | docker login -u $NCR_USERNAME --password-stdin hear-test.kr.ncr.ntruss.com
+
+    - name: Build and Push Docker images to NCR
+      run: |
+        # 프론트엔드 이미지 빌드 및 푸시
+        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-frontend:latest -f ./frontend/Dockerfile ./frontend
+        docker push hear-test.kr.ncr.ntruss.com/deploy_test-frontend:latest
+
+        # 백엔드 이미지 빌드 및 푸시
+        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-backend:latest -f ./backend/Dockerfile ./backend
+        docker push hear-test.kr.ncr.ntruss.com/deploy_test-backend:latest
+
+    - name: Install SSH client
+      run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.NCP_SSH_PRIVATE_KEY }}
+
+    - name: Deploy on NCP via SSH
+      env:
+        NCP_USERNAME: ${{ secrets.NCP_USERNAME }}
+        NCP_SERVER_IP: ${{ secrets.NCP_SERVER_IP }}
+      run: |
+        ssh -o StrictHostKeyChecking=no $NCP_USERNAME@$NCP_SERVER_IP << 'EOF'
+        cd /home/test_project/   # Docker Compose 파일이 위치한 폴더로 이동
+        docker-compose down       # 기존 컨테이너 종료
+        docker-compose pull       # NCR에서 최신 이미지 가져오기
+        docker-compose up -d      # 컨테이너 시작
+        EOF
