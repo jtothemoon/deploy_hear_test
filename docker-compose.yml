@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: ./backend  # Flask 백엔드 파일 경로
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: ./frontend  # React 프론트엔드 파일 경로
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000  # 백엔드 API URL
+    depends_on:
+      - backend

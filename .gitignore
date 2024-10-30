@@ -34,9 +34,6 @@ backend/*.sqlite3
 backend/*.log
 
 # Docker files
-**/Dockerfile
-**/docker-compose.yml
-**/.dockerignore
 
 # IDE/Editor specific files
 .vscode/
