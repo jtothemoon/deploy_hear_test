@@ -1,0 +1,46 @@
+# Node modules
+frontend/node_modules
+
+# Build directories
+frontend/build
+frontend/dist
+
+# React environment
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Flask environment files
+backend/.env
+backend/*.pyc
+backend/__pycache__/
+
+# Python virtual environments (if used outside of Docker)
+venv/
+.env/
+
+# Flask cache and session files
+backend/instance/
+backend/*.sqlite3
+
+# Flask-specific logs
+backend/*.log
+
+# Docker files
+**/Dockerfile
+**/docker-compose.yml
+**/.dockerignore
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+
+# GitHub workflow files
+.github/workflows/*.yml
