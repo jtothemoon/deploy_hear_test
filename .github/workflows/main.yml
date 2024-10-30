@@ -3,8 +3,8 @@ name: Deploy to NCP
 on:
   push:
     branches:
-      - main  # main 브랜치로 푸시할 때 자동으로 실행
-      
+      - main  # main 브랜치에 푸시 시 자동 배포
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,10 +20,6 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.NCP_SSH_PRIVATE_KEY }}
-
-    - name: Copy docker-compose.yml to NCP server
-      run: |
-        scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.NCP_USERNAME }}@${{ secrets.NCP_SERVER_IP }}:/home/test_project/
 
     - name: Run Docker Compose on NCP
       run: |
