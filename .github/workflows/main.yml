@@ -1,0 +1,35 @@
+name: Deploy to NCP
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치로 푸시할 때 자동으로 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH client
+      run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.NCP_SSH_PRIVATE_KEY }}
+
+    - name: Copy docker-compose.yml to NCP server
+      run: |
+        scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.NCP_USERNAME }}@${{ secrets.NCP_SERVER_IP }}:/home/test_project/
+
+    - name: Run Docker Compose on NCP
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.NCP_USERNAME }}@${{ secrets.NCP_SERVER_IP }} << 'EOF'
+        cd /home/test_project/
+        docker-compose down       # 기존 컨테이너 종료
+        docker-compose pull       # 최신 이미지 가져오기
+        docker-compose up -d      # 컨테이너 시작
+        EOF
