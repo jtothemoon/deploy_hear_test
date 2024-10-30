@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main  # main 브랜치에 푸시 시 자동 배포
-     
+
 jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
@@ -23,11 +23,11 @@ jobs:
     - name: Build and Push Docker images to NCR
       run: |
         # 프론트엔드 이미지 빌드 및 푸시
-        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-frontend:latest -f ./frontend/Dockerfile .
+        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-frontend:latest -f frontend/Dockerfile frontend
         docker push hear-test.kr.ncr.ntruss.com/deploy_test-frontend:latest
 
         # 백엔드 이미지 빌드 및 푸시
-        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-backend:latest -f ./backend/Dockerfile .
+        docker build -t hear-test.kr.ncr.ntruss.com/deploy_test-backend:latest -f backend/Dockerfile backend
         docker push hear-test.kr.ncr.ntruss.com/deploy_test-backend:latest
 
     - name: Install SSH client
