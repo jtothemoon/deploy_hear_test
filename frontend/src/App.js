@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Github Actions 테스트입니다!!</h1>
+      <h1>Github Actions 운영 배포 테스트입니다.</h1>
       <h1>{message}</h1>
       <h2>Database Version: {dbVersion}</h2>
     </div>
